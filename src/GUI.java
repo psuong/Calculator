@@ -15,6 +15,7 @@ public class GUI extends JFrame{
     Calculation calcRef;
 
     private String currentInput;
+    private JTextField input;
     private String operatorHistory;
 
     private void setReference(Calculation calculator) { calcRef = calculator; } //sets the reference to the calculation object
@@ -36,9 +37,7 @@ public class GUI extends JFrame{
                     currentInput += numRep;
                     input.setText(currentInput);
                     Double.parseDouble(currentInput);
-                }
-                catch (Exception e1)
-                {
+                } catch (Exception e1) {
                     JOptionPane.showMessageDialog(null, "This is not a valid number!");
                 }
             }
@@ -46,18 +45,17 @@ public class GUI extends JFrame{
         return b;
     }
 
-    private JButton operator(final String operatorRep)
+    private JButton operator(final JTextField input,final String operatorRep)
     {
         JButton b = new JButton(operatorRep);
         b.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int operatorCount = 0;
-                operatorCount++;
-                if (operatorCount > 1)
-                {
-                    JOptionPane.showMessageDialog(null, "Consecutive operators!");
-                }
+                currentInput = input.getText();
+                calcRef.addInfix(currentInput);
+                input.setText("");
+                calcRef.checkLast();
+                calcRef.addInfix(operatorRep);
             }
         });
         return b;
@@ -181,22 +179,22 @@ public class GUI extends JFrame{
         constraints.gridwidth = 1;
         panel.add(dot, constraints);
 
-        JButton add = operator("+");
+        JButton add = operator(input, "+");
         constraints.gridx = 3;
         constraints.gridy = 5;
         panel.add(add, constraints);
 
-        JButton subtract = operator("-");
+        JButton subtract = operator(input, "-");
         constraints.gridx = 3;
         constraints.gridy = 6;
         panel.add(subtract, constraints);
 
-        JButton multiply = operator("*");
+        JButton multiply = operator(input, "*");
         constraints.gridx = 3;
         constraints.gridy = 7;
         panel.add(multiply, constraints);
 
-        JButton divide = operator("/");
+        JButton divide = operator(input ,"/");
         constraints.gridx = 3;
         constraints.gridy = 8;
         panel.add(divide, constraints);
