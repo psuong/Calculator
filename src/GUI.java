@@ -12,22 +12,55 @@ public class GUI extends JFrame{
     final int row = 7;
     final int column = 5;
 
-    private String textField;
+    Calculation calcRef;
+
+    private String currentInput;
+    private String operatorHistory;
+
+    private void setReference(Calculation calculator) { calcRef = calculator; } //sets the reference to the calculation object
 
     public GUI(Calculation calculator)
     {
         bootGUI();
+        setReference(calculator);
     }
 
-    private void noPad(final JTextField input, final String numRep)
+    private JButton noPad(final JTextField input, final String numRep)
     {
         JButton b = new JButton(numRep);
         b.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                try {
+                    currentInput = input.getText();
+                    currentInput += numRep;
+                    input.setText(currentInput);
+                    Double.parseDouble(currentInput);
+                }
+                catch (Exception e1)
+                {
+                    JOptionPane.showMessageDialog(null, "This is not a valid number!");
+                }
             }
         });
+        return b;
+    }
+
+    private JButton operator(final String operatorRep)
+    {
+        JButton b = new JButton(operatorRep);
+        b.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int operatorCount = 0;
+                operatorCount++;
+                if (operatorCount > 1)
+                {
+                    JOptionPane.showMessageDialog(null, "Consecutive operators!");
+                }
+            }
+        });
+        return b;
     }
 
     private void bootGUI() {
@@ -90,56 +123,83 @@ public class GUI extends JFrame{
         constraints.gridy = 3;
         panel.add(clear, constraints);
 
-        JButton one = new JButton("1");
+        //Numberpad
+        JButton one = noPad(input, "1");
         constraints.gridx = 0;
         constraints.gridy = 5;
         panel.add(one, constraints);
 
-        JButton two = new JButton("2");
+        JButton two = noPad(input, "2");
         constraints.gridx = 1;
         constraints.gridy = 5;
         panel.add(two, constraints);
 
-        JButton three = new JButton("3");
+        JButton three = noPad(input, "3");
         constraints.gridx = 2;
         constraints.gridy = 5;
         panel.add(three, constraints);
 
-        JButton four = new JButton("4");
+        JButton four = noPad(input, "4");
         constraints.gridx = 0;
         constraints.gridy = 6;
         panel.add(four, constraints);
 
-        JButton five = new JButton("5");
+        JButton five = noPad(input, "5");
         constraints.gridx = 1;
         constraints.gridy = 6;
         panel.add(five, constraints);
 
-        JButton six = new JButton("6");
+        JButton six = noPad(input, "6");
         constraints.gridx = 2;
         constraints.gridy = 6;
         panel.add(six, constraints);
 
-        JButton seven = new JButton("7");
+        JButton seven = noPad(input, "7");
         constraints.gridx = 0;
         constraints.gridy = 7;
         panel.add(seven, constraints);
 
-        JButton eight = new JButton("8");
+        JButton eight = noPad(input, "8");
         constraints.gridx = 1;
         constraints.gridy = 7;
         panel.add(eight, constraints);
 
-        JButton nine = new JButton("9");
+        JButton nine = noPad(input, "9");
         constraints.gridx = 2;
         constraints.gridy = 7;
         panel.add(nine, constraints);
 
-        JButton zero = new JButton("0");
+        JButton zero = noPad(input, "0");
         constraints.gridx = 0;
         constraints.gridwidth = 2;
         constraints.gridy = 8;
         panel.add(zero, constraints);
+
+        JButton dot = noPad(input, ".");
+        constraints.gridx = 2;
+        constraints.gridy= 8;
+        constraints.gridwidth = 1;
+        panel.add(dot, constraints);
+
+        JButton add = operator("+");
+        constraints.gridx = 3;
+        constraints.gridy = 5;
+        panel.add(add, constraints);
+
+        JButton subtract = operator("-");
+        constraints.gridx = 3;
+        constraints.gridy = 6;
+        panel.add(subtract, constraints);
+
+        JButton multiply = operator("*");
+        constraints.gridx = 3;
+        constraints.gridy = 7;
+        panel.add(multiply, constraints);
+
+        JButton divide = operator("/");
+        constraints.gridx = 3;
+        constraints.gridy = 8;
+        panel.add(divide, constraints);
 
         setVisible(true);
     }
