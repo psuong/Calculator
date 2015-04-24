@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 
 /**
  * Created by porrith on 4/20/15.
- * GridBagConstraints, look up location of grid
  */
 public class GUI extends JFrame{
 
@@ -51,11 +50,19 @@ public class GUI extends JFrame{
         b.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                currentInput = input.getText();
-                calcRef.addInfix(currentInput);
-                input.setText("");
-                calcRef.checkLast();
-                calcRef.addInfix(operatorRep);
+                if (operatorRep != "=")
+                {
+                    currentInput = input.getText();
+                    calcRef.addInfix(currentInput);
+                    input.setText("");
+                    calcRef.checkLast();
+                    calcRef.addInfix(operatorRep);
+                }
+                else
+                {
+                    calcRef.addInfix(operatorRep);
+                    
+                }
             }
         });
         return b;
@@ -198,6 +205,11 @@ public class GUI extends JFrame{
         constraints.gridx = 3;
         constraints.gridy = 8;
         panel.add(divide, constraints);
+
+        JButton equal = operator(input, "=");
+        constraints.gridx = 4;
+        constraints.gridy = 8;
+        panel.add(equal, constraints);
 
         setVisible(true);
     }
