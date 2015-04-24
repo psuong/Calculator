@@ -5,14 +5,17 @@ import java.util.Vector;
 /**
  * Created by porrith on 4/20/15.
  * Must convert infix to postfix
+ * 2 * 3 * 6 / 3 = 2363**\/
  */
 public class Calculation {
 
-    private double memory;
+    private double memory, result;
 
     private Vector<String>infixNotation; //Stores the prefix notation placed into the calculator
     private Vector<String>postfixNotation; //Stores the postfix notation
-    private Stack<String>operators;
+    private Stack<String>operators; //stores the operators to convert infix notation to postfix notation
+
+    private Stack<Double>operands; //stack used for operand calculation
 
     public Calculation()
     {
@@ -20,6 +23,7 @@ public class Calculation {
         infixNotation = new Vector<String>();
         postfixNotation = new Vector<String>();
         operators = new Stack<String>();
+        operands = new Stack<Double>();
     }
 
     public void setMemory(String memoryVal)
@@ -61,7 +65,7 @@ public class Calculation {
     //prints out the vector
     public void printInfix()
     {
-        for (int i = 0; i < infixNotation.size() - 1; i++) {
+        for (int i = 0; i < infixNotation.size(); i++) {
             System.out.println(infixNotation.elementAt(i));
         }
     }
@@ -75,11 +79,11 @@ public class Calculation {
             {
                 postfixNotation.add(s);
             }
-            else if((s == "+" || s == "-" || s == "*" || s == "/") && operators.isEmpty())
+            else if((checkString(s) == false) && operators.isEmpty())
             {
                 operators.push(s);
             }
-            else if((operators.peek() == "+" || operators.peek() == "-") && (s == "*" || s == "/"))
+            /*else if((operators.peek() == "+" || operators.peek() == "-") && (s == "*" || s == "/"))
             {
                 operators.push(s);
             }
@@ -89,7 +93,36 @@ public class Calculation {
                 {
                     postfixNotation.add(operators.pop());
                 }
+                operators.push(s);
+            }*/
+            else if ((s == "*" || s == "/") && (operators.peek() == "/" || operators.peek() == "*"))
+            {
+                operators.push(s);
             }
+            else if ((s == "*" || s == "/") && (operators.peek() == "+" || operators.peek() == "-"))
+            {
+                while (!operators.isEmpty())
+                {
+                    if ((operators.peek() != "*") || operators.peek() != "/")
+                        postfixNotation.add(operators.pop());
+                }
+                operators.push(s);
+            }
+            else if ((s == "+" || s == "-") && (operators.peek() == "*" || operators.peek() == "/"))
+            {
+                while (!operators.isEmpty())
+                {
+                    if ((operators.peek() != "+" || operators.peek() != "*"))
+                    {
+                        postfixNotation.add(operators.pop());
+                    }
+                }
+                operators.push(s);
+            }
+        }
+        if(operators.size() != 0)
+        {
+            postfixNotation.add(operators.pop());
         }
     }
 
@@ -99,4 +132,52 @@ public class Calculation {
             System.out.println(postfixNotation.elementAt(i));
         }
     }
+
+    public double calculate()
+    {
+        String s;
+        double a, b; //temporarily store the operands for calculation
+        for (int i = 0; i < postfixNotation.size(); i++) {
+            s = postfixNotation.elementAt(i);
+            if (checkString(s))
+            {
+                operands.push(Double.parseDouble(s));
+            }
+            else if (!checkString(s))
+            {
+                if (s == "*")
+                {
+                    b = operands.pop();
+                    a = operands.pop();
+                    operands.push(a * b);
+                    //System.out.println(operands.peek());
+                }
+                else if (s == "/")
+                {
+                    b = operands.pop();
+                    a = operands.pop();
+                    operands.push(a / b);
+                    //System.out.println(operands.peek());
+                }
+                else if (s == "+")
+                {
+                    b = operands.pop();
+                    a = operands.pop();
+                    operands.push(a + b);
+                    //System.out.println(operands.peek());
+                }
+                else
+                {
+                    b = operands.pop();
+                    a = operands.pop();
+                    operands.push(a - b);
+                    //System.out.println(operands.peek());
+                }
+            }
+        }
+        result = operands.pop();
+        return result;
+    }
+
+    public double returnAnswer() { return result; }
 }
