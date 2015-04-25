@@ -79,48 +79,55 @@ public class Calculation {
             {
                 postfixNotation.add(s);
             }
-            else if((checkString(s) == false) && operators.isEmpty())
-            {
+            else if (operators.isEmpty() || operators.peek() == "(" || s == "(")
                 operators.push(s);
-            }
-            /*else if((operators.peek() == "+" || operators.peek() == "-") && (s == "*" || s == "/"))
+            else if (s == ")")
             {
-                operators.push(s);
-            }
-            else if ((operators.peek() == "*" || operators.peek() == "/") && (s == "+" || s == "-"))
-            {
-                while(!operators.isEmpty())
+                while(operators.peek() != "(")
                 {
                     postfixNotation.add(operators.pop());
                 }
-                operators.push(s);
-            }*/
-            else if ((s == "*" || s == "/") && (operators.peek() == "/" || operators.peek() == "*"))
-            {
-                operators.push(s);
+                if (operators.peek() == "(")
+                    operators.pop();
             }
-            else if ((s == "*" || s == "/") && (operators.peek() == "+" || operators.peek() == "-"))
+            else if (s == "*" || s == "/")
             {
-                while (!operators.isEmpty())
+                if (operators.peek() == "*" || operators.peek() == "/")
                 {
-                    if ((operators.peek() != "*") || operators.peek() != "/")
-                        postfixNotation.add(operators.pop());
+                    postfixNotation.add(operators.pop());
+                    operators.push(s);
                 }
-                operators.push(s);
-            }
-            else if ((s == "+" || s == "-") && (operators.peek() == "*" || operators.peek() == "/"))
-            {
-                while (!operators.isEmpty())
+                else
                 {
-                    if ((operators.peek() != "+" || operators.peek() != "*"))
+                    operators.push(s);
+                }
+            }
+            else if (s == "+" || s == "-")
+            {
+                if (operators.peek() == "*" || operators.peek() == "/")
+                {
+                    System.out.println(true);
+                    while(!operators.isEmpty())
                     {
-                        postfixNotation.add(operators.pop());
+                        if(operators.peek() != "+" || operators.peek() != "-")
+                            postfixNotation.add(operators.pop());
                     }
+                    operators.push(s);
                 }
-                operators.push(s);
+                else if (operators.peek() == "+" || operators.peek() == "-")
+                {
+                    System.out.println("Second condition: " + true);
+                    postfixNotation.add(operators.pop());
+                    operators.push(s);
+                }
+                else
+                {
+                    System.out.println("Third condition: " + true);
+                    operators.push(s);
+                }
             }
         }
-        if(operators.size() != 0)
+        while (operators.size() > 0)
         {
             postfixNotation.add(operators.pop());
         }
