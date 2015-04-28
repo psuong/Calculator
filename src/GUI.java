@@ -10,12 +10,11 @@ public class GUI extends JFrame{
 
     final int row = 7;
     final int column = 5;
+    private boolean isParenthesis;
 
     Calculation calcRef;
 
     private String currentInput;
-    private JTextField input;
-    private String operatorHistory;
 
     private void setReference(Calculation calculator) { calcRef = calculator; } //sets the reference to the calculation object
 
@@ -32,6 +31,9 @@ public class GUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    if (isParenthesis == true)
+                        input.setText("");
+                    isParenthesis = false;
                     currentInput = input.getText();
                     currentInput += numRep;
                     input.setText(currentInput);
@@ -55,13 +57,97 @@ public class GUI extends JFrame{
                     currentInput = input.getText();
                     calcRef.addInfix(currentInput);
                     input.setText("");
-                    calcRef.checkLast();
                     calcRef.addInfix(operatorRep);
                 }
                 else
                 {
-                    calcRef.addInfix(operatorRep);
-                    
+                    currentInput = input.getText();
+                    calcRef.addInfix(currentInput);
+                    calcRef.convertForm();
+                    calcRef.calculate();
+                    input.setText(Double.toString(calcRef.returnAnswer()));
+                }
+            }
+        });
+        return b;
+    }
+
+    private JButton memoryButtons(final JLabel memory, final JTextField input, final String memoryRep)
+    {
+        JButton b = new JButton(memoryRep);
+        b.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (memoryRep == "MC")
+                {
+                    calcRef.resetMem();
+                    memory.setText(Double.toString(calcRef.getMemory()));
+                }
+                else if (memoryRep == "M+")
+                    try
+                    {
+                        calcRef.addMemory(input.getText());
+                        memory.setText("Memory: " + calcRef.getMemory());
+                    }
+                    catch (Exception except)
+                    {
+                        JOptionPane.showMessageDialog(null, "Cannot add to memory.");
+                    }
+                else if (memoryRep == "M-")
+                    try
+                    {
+                        calcRef.subMemory(input.getText());
+                        memory.setText("Memory: " + calcRef.getMemory());
+                    }
+                    catch (Exception except)
+                    {
+                        JOptionPane.showMessageDialog(null, "Cannot subract from memory.");
+                    }
+                else if (memoryRep == "MR")
+                    input.setText(Double.toString(calcRef.getMemory()));
+                else if (memoryRep == "C")
+                    input.setText("");
+            }
+        });
+        return b;
+    }
+
+    private JButton extraButtons(final JTextField input, final String rep)
+    {
+        JButton b = new JButton(rep);
+        b.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (rep == "(") {
+                    input.setText(rep);
+                    calcRef.addInfix(rep);
+                    isParenthesis = true;
+                }
+                else if (rep == ")")
+                {
+                    currentInput = input.getText();
+                    calcRef.addInfix(currentInput);
+                    input.setText(rep);
+                    calcRef.addInfix(rep);
+                    isParenthesis = true;
+                }
+                else if (rep == "+/-")
+                {
+                    String currentIn;
+                    StringBuilder buildString;
+                    if (input.getText().contains("-"))
+                    {
+                        currentIn = input.getText();
+                        buildString = new StringBuilder(currentIn);
+                        buildString.deleteCharAt(0);
+                        currentIn = buildString.toString();
+                        input.setText(currentIn);
+                    }
+                    else
+                    {
+                        currentIn = input.getText();
+                        input.setText("-" + currentIn);
+                    }
                 }
             }
         });
@@ -88,42 +174,42 @@ public class GUI extends JFrame{
         constraints.weightx = 1;
         constraints.ipady = 20;
         constraints.fill = GridBagConstraints.BOTH;
-        input.setEditable(true);
+        input.setEditable(false);
         panel.add(input, constraints);
 
         constraints.ipady = 20;
 
         //Memory label
-        final JLabel memory = new JLabel("Memory: "); //remember to add
+        JLabel memoryLabel = new JLabel("Memory: " + 0.0); //remember to add
         constraints.gridx = 0;
         constraints.gridy = 2;
         constraints.gridwidth = column;
-        panel.add(memory, constraints);
+        panel.add(memoryLabel, constraints);
 
         constraints.gridwidth = 1;
 
         //Memory Buttons
-        JButton clearMem = new JButton("MC"); //clears the memory and textfield
+        JButton clearMem = memoryButtons(memoryLabel, input, "MC"); //clears the memory and textfield
         constraints.gridx = 0;
         constraints.gridy = 3;
         panel.add(clearMem, constraints);
 
-        JButton addMem = new JButton("M+"); //takes the textfield and adds it to memory
+        JButton addMem = memoryButtons(memoryLabel, input, "M+"); //takes the textfield and adds it to memory
         constraints.gridx = 1;
         constraints.gridy = 3;
         panel.add(addMem, constraints);
 
-        JButton subMem = new JButton("M-"); //subtracts from memory using the textfield
+        JButton subMem = memoryButtons(memoryLabel, input, "M-"); //subtracts from memory using the textfield
         constraints.gridx = 2;
         constraints.gridy = 3;
         panel.add(subMem, constraints);
 
-        JButton recallMem = new JButton("MR"); //recalls the memory and puts it in the textfield
+        JButton recallMem = memoryButtons(memoryLabel, input, "MR"); //recalls the memory and puts it in the textfield
         constraints.gridx = 3;
         constraints.gridy = 3;
         panel.add(recallMem, constraints);
 
-        JButton clear = new JButton("C"); //clears the textfield only
+        JButton clear = memoryButtons(memoryLabel, input, "C"); //clears the textfield only
         constraints.gridx = 4;
         constraints.gridy = 3;
         panel.add(clear, constraints);
@@ -210,6 +296,21 @@ public class GUI extends JFrame{
         constraints.gridx = 4;
         constraints.gridy = 8;
         panel.add(equal, constraints);
+
+        JButton parenthesisL = extraButtons(input, "(");
+        constraints.gridx = 4;
+        constraints.gridy = 5;
+        panel.add(parenthesisL, constraints);
+
+        JButton parenthesisR = extraButtons(input, ")");
+        constraints.gridx = 4;
+        constraints.gridy = 6;
+        panel.add(parenthesisR, constraints);
+
+        JButton posNeg = extraButtons(input, "+/-");
+        constraints.gridx = 4;
+        constraints.gridy = 7;
+        panel.add(posNeg, constraints);
 
         setVisible(true);
     }

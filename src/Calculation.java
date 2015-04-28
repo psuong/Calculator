@@ -26,9 +26,9 @@ public class Calculation {
         operands = new Stack<Double>();
     }
 
-    public void setMemory(String memoryVal)
+    public void addMemory(String memoryVal)
     {
-        memory = Double.parseDouble(memoryVal);
+        memory += Double.parseDouble(memoryVal);
     }
 
     public double getMemory() { return memory; }
@@ -36,18 +36,6 @@ public class Calculation {
     public void addInfix(String s)
     {
         infixNotation.add(s);
-    }
-
-    public void checkLast() //checks the last element for doubles
-    {
-        try
-        {
-            Double.parseDouble(infixNotation.lastElement());
-        }
-        catch (Exception e)
-        {
-            JOptionPane.showMessageDialog(null, "Cannot have consecutive operators!");
-        }
     }
 
     private boolean checkString(String s)
@@ -106,7 +94,6 @@ public class Calculation {
             {
                 if (operators.peek() == "*" || operators.peek() == "/")
                 {
-                    System.out.println(true);
                     while(!operators.isEmpty())
                     {
                         if(operators.peek() != "+" || operators.peek() != "-")
@@ -116,13 +103,11 @@ public class Calculation {
                 }
                 else if (operators.peek() == "+" || operators.peek() == "-")
                 {
-                    System.out.println("Second condition: " + true);
                     postfixNotation.add(operators.pop());
                     operators.push(s);
                 }
                 else
                 {
-                    System.out.println("Third condition: " + true);
                     operators.push(s);
                 }
             }
@@ -133,6 +118,8 @@ public class Calculation {
         }
     }
 
+
+    //Debugging purposes function is not actually needed
     public void printPostfix()
     {
         for (int i = 0; i < postfixNotation.size(); i++) {
@@ -157,34 +144,45 @@ public class Calculation {
                     b = operands.pop();
                     a = operands.pop();
                     operands.push(a * b);
-                    //System.out.println(operands.peek());
                 }
                 else if (s == "/")
                 {
                     b = operands.pop();
                     a = operands.pop();
                     operands.push(a / b);
-                    //System.out.println(operands.peek());
                 }
                 else if (s == "+")
                 {
                     b = operands.pop();
                     a = operands.pop();
                     operands.push(a + b);
-                    //System.out.println(operands.peek());
                 }
-                else
+                else if (s == "-")
                 {
                     b = operands.pop();
                     a = operands.pop();
                     operands.push(a - b);
-                    //System.out.println(operands.peek());
                 }
             }
         }
         result = operands.pop();
+        clearStorages();
         return result;
     }
 
     public double returnAnswer() { return result; }
+
+    private void clearStorages()
+    {
+        infixNotation.clear();
+        postfixNotation.clear();
+        operators.clear();
+        operands.clear();
+    }
+
+    public void subMemory(String memoryVal) {
+        memory -= Double.parseDouble(memoryVal);
+    }
+
+    public void resetMem() { memory = 0.0; }
 }

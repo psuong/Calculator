@@ -5,15 +5,17 @@
 public class Main {
     public static void main(String[] args) {
         Calculation calculator = new Calculation();
-        //GUI newCalc = new GUI(calculator);
+        GUI newCalc = new GUI(calculator);
 
-        calculator.addInfix("10");
-        calculator.addInfix("/");
-        calculator.addInfix("2");
+        /*calculator.addInfix("(");
+        calculator.addInfix("3");
         calculator.addInfix("+");
-        calculator.addInfix("1");
+        calculator.addInfix("5");
+        calculator.addInfix(")");
         calculator.addInfix("*");
-        calculator.addInfix("2");
+        calculator.addInfix("12");
+        calculator.addInfix("/");
+        calculator.addInfix("3");
 
         calculator.printInfix();
 
@@ -25,7 +27,6 @@ public class Main {
 
         calculator.calculate();
 
-        System.out.println("\nAnswer: " + calculator.returnAnswer());
-
+        System.out.println("\nAnswer: " + calculator.returnAnswer());*/
     }
 }
